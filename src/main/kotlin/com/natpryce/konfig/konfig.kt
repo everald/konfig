@@ -152,13 +152,22 @@ class ConfigurationProperties(
          */
         @JvmStatic
         fun systemProperties() = ConfigurationProperties(System.getProperties(), Location("system properties"))
-        
+
         /**
          * Load from resources relative to a class
          */
         @JvmStatic
         fun fromResource(relativeToClass: Class<*>, resourceName: String) =
             loadFromResource(resourceName, relativeToClass.getResource(resourceName))
+
+        /**
+         * Load from resources relative to a class
+         */
+        @JvmStatic
+        fun fromOptionalResource(relativeToClass: Class<*>, resourceName: String): Configuration {
+            val resource = relativeToClass.getResource(resourceName)
+            return if(resource != null) loadFromResource(resourceName, resource) else EmptyConfiguration
+        }
         
         /**
          * Load from resource within the system classloader.
@@ -167,6 +176,16 @@ class ConfigurationProperties(
         fun fromResource(resourceName: String): ConfigurationProperties {
             val classLoader = ClassLoader.getSystemClassLoader()
             return loadFromResource(resourceName, classLoader.getResource(resourceName))
+        }
+
+        /**
+         * Load from optional resource within the system classloader.
+         */
+        @JvmStatic
+        fun fromOptionalResource(resourceName: String): Configuration {
+            val classLoader = ClassLoader.getSystemClassLoader()
+            val resource = classLoader.getResource(resourceName)
+            return if(resource != null) loadFromResource(resourceName, resource) else EmptyConfiguration
         }
         
         private fun loadFromResource(resourceName: String, resourceUrl: URL?): ConfigurationProperties {

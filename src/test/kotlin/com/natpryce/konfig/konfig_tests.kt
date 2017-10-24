@@ -300,6 +300,22 @@ class FromResources {
     }
 
     @Test
+    fun can_load_from_optional_resource() {
+        val config = ConfigurationProperties.fromOptionalResource(javaClass, "example.properties")
+
+        assertThat(config[a], equalTo(1))
+        assertThat(config[b], equalTo("two"))
+    }
+
+    @Test
+    fun can_load_from_absolute_optional_resource() {
+        val config = ConfigurationProperties.fromOptionalResource("com/natpryce/konfig/example.properties")
+
+        assertThat(config[a], equalTo(1))
+        assertThat(config[b], equalTo("two"))
+    }
+
+    @Test
     fun can_load_from_file() {
         val config = ConfigurationProperties.fromFile(File("src/test/resources/com/natpryce/konfig/example.properties"))
 
@@ -317,6 +333,20 @@ class FromResources {
     @Test
     fun should_return_empty_config_when_load_from_optional_file_thats_not_present() {
         val config = ConfigurationProperties.fromOptionalFile(File("not.available.file"))
+
+        assertThat(config, equalTo<Configuration>(EmptyConfiguration))
+    }
+
+    @Test
+    fun should_return_empty_config_when_load_from_optional_resource_thats_not_present() {
+        val config = ConfigurationProperties.fromOptionalResource(javaClass, "example-not-present.properties")
+
+        assertThat(config, equalTo<Configuration>(EmptyConfiguration))
+    }
+
+    @Test
+    fun should_return_empty_config_when_load_from_optional_absolute_resource_thats_not_present() {
+        val config = ConfigurationProperties.fromOptionalResource("com/natpryce/konfig/example-not-present.properties")
 
         assertThat(config, equalTo<Configuration>(EmptyConfiguration))
     }
